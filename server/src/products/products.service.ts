@@ -1,26 +1,57 @@
-import { Injectable } from '@nestjs/common';
-import { CreateProductDto } from './dto/create-product.dto';
-import { UpdateProductDto } from './dto/update-product.dto';
+import { BadGatewayException, Injectable } from '@nestjs/common';
+import { CreateProductDto, UpdateProductDto } from './dto/create-product.dto';
+import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()
 export class ProductsService {
-  create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
+  constructor(private readonly prisma: PrismaService) {}
+
+  async create(createProductDto: CreateProductDto) {
+    try {
+      return await this.prisma.product.create({
+        data: createProductDto,
+      });
+    } catch (error) {
+      throw new BadGatewayException(`Failed to create product: ${error}`);
+    }
   }
 
-  findAll() {
-    return `This action returns all products`;
+  async findAll() {
+    try {
+      return await this.prisma.product.findMany();
+    } catch (error) {
+      throw new BadGatewayException(`Failed to fetch products: ${error}`);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(id: string) {
+    try {
+      return await this.prisma.product.findUnique({
+        where: { id },
+      });
+    } catch (error) {
+      throw new BadGatewayException(`Failed to fetch product: ${error}`);
+    }
   }
 
-  update(id: number, updateProductDto: UpdateProductDto) {
-    return `This action updates a #${id} product`;
+  async update(id: string, updateProductDto: UpdateProductDto) {
+    try {
+      return await this.prisma.product.update({
+        where: { id },
+        data: updateProductDto,
+      });
+    } catch (error) {
+      throw new BadGatewayException(`Failed to update product: ${error}`);
+    }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} product`;
+  async remove(id: string) {
+    try {
+      return await this.prisma.product.delete({
+        where: { id },
+      });
+    } catch (error) {
+      throw new BadGatewayException(`Failed to delete product: ${error}`);
+    }
   }
 }

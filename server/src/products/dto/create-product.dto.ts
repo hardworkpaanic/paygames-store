@@ -1,15 +1,17 @@
 // product.dto.ts
 import { z } from 'zod';
 import { createZodDto } from '@anatine/zod-nestjs';
+import { ProductType } from 'generated/prisma/enums';
 
 // Enum для ProductType
+
+// Используем значения из Prisma enum
 export const ProductTypeEnum = z.enum([
-  'GAME',
-  'SOFTWARE',
-  'ELECTRONICS',
-  'BOOK',
+  ProductType.GAME,
+  ProductType.ACCOUNT,
+  ProductType.KEY,
 ]);
-export type ProductType = z.infer<typeof ProductTypeEnum>;
+export type ProductTypeType = z.infer<typeof ProductTypeEnum>;
 
 // Схема для loginInfo (если есть определенная структура)
 export const LoginInfoSchema = z
@@ -39,7 +41,7 @@ export const ProductSchema = z.object({
     .max(1000, 'Description must not exceed 1000 characters'),
   type: ProductTypeEnum.default('GAME'),
   fileUrl: z.string().url('Must be a valid URL').optional().default(''),
-  loginInfo: LoginInfoSchema.optional(),
+  loginInfo: z.any().nullable().optional().default(null), // Используем any для JSON
   isAvailable: z.boolean().default(true),
   sellerId: z.string().uuid('Seller ID must be a valid UUID'),
   createdAt: z.date().optional(),
