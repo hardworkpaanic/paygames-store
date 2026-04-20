@@ -1,12 +1,12 @@
 import { z } from 'zod';
 
-export const CreateUserSchema = z.object({
+export const CreateUserDto = z.object({
   email: z.string().email('Invalid email format'),
   name: z.string().min(1, 'Name is required').max(100, 'Name is too long'),
   balance: z.number().int().min(0, 'Balance cannot be negative').default(0),
 });
 
-export const UpdateUserSchema = z.object({
+export const UpdateUserDto = z.object({
   email: z.string().email('Invalid email format').optional(),
   name: z
     .string()
@@ -27,6 +27,6 @@ export const UserSchema = z.object({
   orders: z.array(z.any()).optional(),
 });
 
-export type CreateUserDto = z.infer<typeof CreateUserSchema>;
-export type UpdateUserDto = z.infer<typeof UpdateUserSchema>;
+export type CreateUserDto = z.infer<typeof CreateUserDto>;
+export type UpdateUserDto = z.infer<typeof UpdateUserDto>;
 export type UserDto = z.infer<typeof UserSchema>;
