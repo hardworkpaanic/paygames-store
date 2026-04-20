@@ -1,0 +1,77 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+    provider     = "prisma-client"
+    output       = "../generated/prisma"
+    moduleFormat = "cjs"
+}
+
+datasource db {
+    provider = "sqlite"
+}
+
+model User {
+    id      String @id @default(uuid())
+    email   String @unique
+    name    String
+    balance Int    @default(0)
+
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+    products  Product[]
+    orders    Order[]
+}
+
+model Product {
+    id          String      @id @default(uuid())
+    title       String
+    price       Int         @default(100)
+    description String
+    type        ProductType @default(GAME)
+    fileUrl     String?     @default("")
+    loginInfo   Json?
+    isAvailable Boolean     @default(true)
+
+    sellerId  String
+    seller    User     @relation(fields: [sellerId], references: [id])
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    orders    Order[]
+}
+
+model Order {
+    id        String      @id @default(uuid())
+    paymentId String?
+    status    OrderStatus @default(PENDING)
+    amount    Int         @default(0)
+    user      User        @relation(fields: [userId], references: [id])
+    userId    String
+    products  Product[]
+    createdAt DateTime    @default(now())
+    updatedAt DateTime    @updatedAt
+}
+
+model Transaction {
+    id        String   @id @default(uuid())
+    orderId   String
+    amount    Int      @default(0)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+enum ProductType {
+    GAME
+    ACCOUNT
+    KEY
+}
+
+enum OrderStatus {
+    PENDING
+    PAID
+    COMPLETED
+    REFUNDED
+    CANCELLED
+}
